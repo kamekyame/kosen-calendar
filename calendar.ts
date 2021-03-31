@@ -6,14 +6,18 @@ function toISOString(date: Date, allDay = false) {
     return number.toString();
   }
 
-  let str = date.getUTCFullYear().toString() +
-    pad(date.getUTCMonth() + 1) +
-    pad(date.getUTCDate());
+  console.log(date);
+
+  let str = date.getFullYear().toString() +
+    pad(date.getMonth() + 1) +
+    pad(date.getDate());
   if (!allDay) {
-    str += "T" + pad(date.getUTCHours()) +
-      pad(date.getUTCMinutes()) +
-      pad(date.getUTCSeconds()) + "Z";
+    str += "T" + pad(date.getHours()) +
+      pad(date.getMinutes()) +
+      pad(date.getSeconds());
   }
+
+  console.log(str);
 
   return str;
 }
