@@ -1,3 +1,5 @@
+import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
+
 function toISOString(date: Date, allDay = false) {
   function pad(number: number) {
     if (number < 10) {
@@ -6,7 +8,7 @@ function toISOString(date: Date, allDay = false) {
     return number.toString();
   }
 
-  console.log(date);
+  //console.log(date);
 
   let str = date.getFullYear().toString() +
     pad(date.getMonth() + 1) +
@@ -17,7 +19,7 @@ function toISOString(date: Date, allDay = false) {
       pad(date.getSeconds());
   }
 
-  console.log(str);
+  //console.log(str);
 
   return str;
 }
@@ -98,6 +100,7 @@ export class VEvent {
   private summary: string;
   private dtStamp: Date;
   private allDay: boolean;
+  private readonly uId: string;
 
   constructor(
     { dtStart, dtEnd, summary, allDay }: {
@@ -112,6 +115,7 @@ export class VEvent {
     this.summary = summary;
     this.dtStamp = new Date();
     this.allDay = allDay || false;
+    this.uId = v4.generate();
   }
 
   toICSString() {
@@ -122,6 +126,7 @@ export class VEvent {
       toISOString(this.dtEnd, this.allDay) + "\r\n";
     str += "SUMMARY:" + this.summary + "\r\n";
     str += "DTSTAMP:" + toISOString(this.dtStamp) + "\r\n";
+    str += "UID:" + this.uId + "\r\n";
     str += "END:VEVENT" + "\r\n";
     return str;
   }
