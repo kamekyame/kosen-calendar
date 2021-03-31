@@ -2,8 +2,8 @@ import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
 import { createKosenCalendar } from "../util.ts";
 
-async function scraping() {
-  const calendar = createKosenCalendar(); //new VCalendar({ prodId: "KOSEN calender scraping project" });
+async function scraping(oldCalendar?: VCalendar) {
+  const calendar = oldCalendar || createKosenCalendar();
 
   const dom = await getDOM("https://www.fukui-nct.ac.jp/life/event/");
   if (!dom) return;
@@ -14,13 +14,13 @@ async function scraping() {
   const yearMatch = titleH2.textContent.match(/\d+/);
   if (!yearMatch || yearMatch.length < 1) return;
   const year = parseInt(yearMatch[0]);
-  console.log(year + "年度");
+  //console.log(year + "年度");
 
   body.getElementById("entry-content")
     ?.getElementsByTagName("table").forEach(
       (monthTable, i) => {
         const month = (i + 4) % 12;
-        console.log(month + "月");
+        //console.log(month + "月");
 
         monthTable.getElementsByTagName("tr").forEach((dayTr) => {
           const dayTds = dayTr.getElementsByTagName("td");
@@ -32,18 +32,22 @@ async function scraping() {
             const summary = eventTd.textContent;
             //console.log(day + "日", summary);
 
-            const dtStart = new Date(
-              month <= 3 ? year + 1 : year,
-              month - 1,
-              day,
+            const dtStart = new Date(0);
+            dtStart.setFullYear(month <= 3 ? year + 1 : year, month - 1, day);
+            const dtEnd = new Date(0);
+            dtEnd.setFullYear(month <= 3 ? year + 1 : year, month - 1, day + 1);
+
+            const events = calendar.getEvents();
+            let event = events.find((e) =>
+              e.dtStart.getTime() == dtStart.getTime() &&
+              e.dtEnd.getTime() == dtEnd.getTime()
             );
-            const dtEnd = new Date(
-              month <= 3 ? year + 1 : year,
-              month - 1,
-              day + 1,
-            );
-            const event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
-            calendar.addEvent(event);
+            if (event) {
+              event.summary = summary;
+            } else {
+              event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
+              calendar.addEvent(event);
+            }
           }
         });
       },
@@ -51,14 +55,19 @@ async function scraping() {
   return { calendar, year };
 }
 
-const scrapingData = await scraping();
+const fileName = `fukui.ics`;
+
+const text = Deno.readTextFileSync(fileName);
+const c = VCalendar.convertICS(text);
+
+const scrapingData = await scraping(c);
 if (!scrapingData) {
   console.error("スクレイピング失敗");
   Deno.exit();
 }
+
 const icsText = scrapingData.calendar.toICSString();
 //console.log(icsText);
 
-const fileName = `fukui_${scrapingData.year}.ics`;
 Deno.writeTextFileSync(fileName, icsText);
 console.log(`${fileName}に出力しました。`);

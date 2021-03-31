@@ -73,6 +73,8 @@ export class VCalendar {
     this.events.push(event);
   }
 
+  getEvents = () => this.events;
+
   toICSString() {
     let str = "BEGIN:VCALENDAR\r\n";
     str += "VERSION:" + this.version + "\r\n";
@@ -87,7 +89,7 @@ export class VCalendar {
 
   static convertICS(text: string) {
     const lines = text.split("\r\n").map((e) => e.split(":"));
-    console.log(lines);
+    //console.log(lines);
 
     // VCALENCARのBEGINとENDを取る
     let { begin: b, end: e, value: v } = BetweenBeginEnd(
@@ -96,7 +98,7 @@ export class VCalendar {
       lines.length,
     );
     if (v !== "VCALENDAR") return;
-    console.log(b, e);
+    //console.log(b, e);
 
     let prodId: string | undefined;
     let timezone: VTimezone | undefined = undefined;
@@ -108,7 +110,7 @@ export class VCalendar {
         b + 1,
         e - 1,
       );
-      console.log(b1, e1, v1);
+      //console.log(b1, e1, v1);
       if (b1 === e1) break;
       for (let i = b + 1; i < b1; i++) {
         if (lines[i][0] === "PRODID") prodId = lines[i][1];
@@ -225,12 +227,12 @@ export class Standard {
 }
 
 export class VEvent {
-  private dtStart: Date;
-  private dtEnd: Date;
-  private summary: string;
+  public dtStart: Date;
+  public dtEnd: Date;
+  public summary: string;
   private dtStamp: Date;
   private allDay: boolean;
-  private readonly uId: string;
+  public readonly uId: string;
 
   constructor(
     { dtStart, dtEnd, summary, allDay, dtStamp, uId }: {
