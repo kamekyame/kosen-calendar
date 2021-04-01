@@ -1,6 +1,10 @@
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:KOSEN calender scraping project
+X-WR-CALNAME:福井高専 - KOSEN calendar
+X-WR-CALDESC:福井工業高等専門学校の行事予定です。
+X-WR-TIMEZONE:Asia/Tokyo
+X-WR-RELCALID:c362f2bc-6fd5-43d2-9176-f4fcc9c19e9d
 BEGIN:VTIMEZONE
 TZID:Japan
 BEGIN:STANDARD

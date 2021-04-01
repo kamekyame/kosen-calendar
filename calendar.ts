@@ -58,15 +58,37 @@ export class VCalendar {
   private prodId: string;
   private timezone?: VTimezone;
   private events: VEvent[];
+  public xWrCalName: string;
+  public xWrCalDesc: string;
+  public xWrTimezone: string;
+  public readonly xWrRelcalId: string;
 
-  constructor({ prodId, timezone, events }: {
-    prodId: string;
-    timezone?: VTimezone;
-    events?: VEvent[];
-  }) {
+  constructor(
+    {
+      prodId,
+      timezone,
+      events,
+      xWrCalName,
+      xWrCalDesc,
+      xWrTimezone,
+      xWrRelcalId,
+    }: {
+      prodId: string;
+      timezone?: VTimezone;
+      events?: VEvent[];
+      xWrCalName?: string;
+      xWrCalDesc?: string;
+      xWrTimezone?: string;
+      xWrRelcalId?: string;
+    },
+  ) {
     this.prodId = prodId;
     this.timezone = timezone;
     this.events = events || [];
+    this.xWrCalName = xWrCalName || "";
+    this.xWrCalDesc = xWrCalDesc || "";
+    this.xWrTimezone = xWrTimezone || "";
+    this.xWrRelcalId = xWrRelcalId || v4.generate();
   }
 
   addEvent(event: VEvent) {
@@ -79,6 +101,10 @@ export class VCalendar {
     let str = "BEGIN:VCALENDAR\r\n";
     str += "VERSION:" + this.version + "\r\n";
     str += "PRODID:" + this.prodId + "\r\n";
+    if (this.xWrCalName) str += "X-WR-CALNAME:" + this.xWrCalName + "\r\n";
+    if (this.xWrCalDesc) str += "X-WR-CALDESC:" + this.xWrCalDesc + "\r\n";
+    if (this.xWrTimezone) str += "X-WR-TIMEZONE:" + this.xWrTimezone + "\r\n";
+    str += "X-WR-RELCALID:" + this.xWrRelcalId + "\r\n";
     if (this.timezone) str += this.timezone.toICSString();
     this.events.forEach((e) => {
       str += e.toICSString();
@@ -103,6 +129,10 @@ export class VCalendar {
     let prodId: string | undefined;
     let timezone: VTimezone | undefined = undefined;
     const events: VEvent[] = [];
+    let xWrCalName: string | undefined;
+    let xWrCalDesc: string | undefined;
+    let xWrTimezone: string | undefined;
+    let xWrRelcalId: string | undefined;
 
     while (true) {
       const { begin: b1, end: e1, value: v1 } = BetweenBeginEnd(
@@ -113,20 +143,31 @@ export class VCalendar {
       //console.log(b1, e1, v1);
       if (b1 === e1) break;
       for (let i = b + 1; i < b1; i++) {
-        if (lines[i][0] === "PRODID") prodId = lines[i][1];
+        const [k, v] = lines[i];
+        if (k === "PRODID") prodId = v;
+        else if (k === "X-WR-CALNAME") xWrCalName = v;
+        else if (k === "X-WR-CALDESC") xWrCalDesc = v;
+        else if (k === "X-WR-TIMEZONE") xWrTimezone = v;
+        else if (k === "X-WR-RELCALID") xWrRelcalId = v;
       }
       if (v1 === "VTIMEZONE") {
         timezone = VTimezone.convertICS(lines.slice(b1, e1 + 1));
-        //console.log("VTIMEZONE");
       } else if (v1 === "VEVENT") {
         const event = VEvent.convertICS(lines.slice(b1, e1 + 1));
-        //console.log(event);
         if (event) events.push(event);
       }
       b = e1;
     }
-    if (!prodId) return;
-    const calendar = new VCalendar({ prodId, timezone, events });
+    if (!prodId || !xWrRelcalId) return;
+    const calendar = new VCalendar({
+      prodId,
+      timezone,
+      events,
+      xWrCalName,
+      xWrCalDesc,
+      xWrTimezone,
+      xWrRelcalId,
+    });
     return calendar;
   }
 }

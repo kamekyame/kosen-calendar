@@ -3,7 +3,7 @@ import { VCalendar, VEvent } from "../calendar.ts";
 import { createKosenCalendar } from "../util.ts";
 
 async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar || createKosenCalendar();
+  const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
 
   const dom = await getDOM("https://www.fukui-nct.ac.jp/life/event/");
   if (!dom) return;
@@ -57,7 +57,12 @@ async function scraping(oldCalendar?: VCalendar) {
 
 const fileName = `fukui.ics`;
 
-const text = Deno.readTextFileSync(fileName);
+let text = "";
+try {
+  text = Deno.readTextFileSync(fileName);
+} catch (e) {
+  console.log(e);
+}
 const c = VCalendar.convertICS(text);
 
 const scrapingData = await scraping(c);
