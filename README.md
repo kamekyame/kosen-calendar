@@ -15,7 +15,7 @@
 |高専名|URL|
 |--|--|
 |福井高専|https://kamekyame.github.io/kosen-calendar/fukui/fukui.ics|
-|熊本高専(八代)|https://kamekyame.github.io/kosen-calendar/kumamoto/kumamoto-y.ics|
+|熊本高専(八代)|https://kamekyame.github.io/kosen-calendar/kumamoto/yatsushiro.ics|
 
 ## 協力お願い
 各高専の行事予定を自動スクレイピングで毎年更新したいです。
