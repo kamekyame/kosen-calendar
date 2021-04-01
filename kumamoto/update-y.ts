@@ -6,7 +6,8 @@ const type = ["共通", "寮", "本科", "専攻科"];
 const year = parseInt(Deno.args[0]);
 
 async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar || createKosenCalendar("熊本高専", "熊本高等専門学校");
+  const calendar = oldCalendar ||
+    createKosenCalendar("熊本高専(八代)", "熊本高等専門学校 八代キャンパス");
 
   const dom = await getDOM(
     `https://kumamoto-nct.ac.jp/shien/schedule/y-${year}.html`,
@@ -55,7 +56,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return calendar;
 }
 
-const fileName = `kumamoto-yatsushiro.ics`;
+const fileName = `kumamoto-y.ics`;
 
 let text = "";
 try {
