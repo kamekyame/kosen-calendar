@@ -58,7 +58,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return calendar;
 }
 
-const fileName = `ktakyusyu.ics`;
+const fileName = `kitakyusyu.ics`;
 
 let text = "";
 try {
