@@ -14,6 +14,7 @@
 
 |高専名|URL|備考|
 |--|--|--|
+|長岡高専|https://kamekyame.github.io/kosen-calendar/nagaoka/nagaoka.ics|有志の方が手打ちで作ってくれました。|
 |石川高専|https://kamekyame.github.io/kosen-calendar/ishikawa/ishikawa_2021.ics|有志の方が手打ちで作ってくれました。|
 |福井高専|https://kamekyame.github.io/kosen-calendar/fukui/fukui.ics||
 |弓削商船高専|https://calendar.google.com/calendar/ical/yugencmt%40gmail.com/public/basic.ics （共通）<br>https://calendar.google.com/calendar/ical/6rtpjgchl917teni5o99sni1c0%40group.calendar.google.com/public/basic.ics （専攻科）|弓削商船高専が直接公開しているカレンダーとなります。|
