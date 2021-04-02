@@ -68,7 +68,7 @@ try {
 }
 const c = VCalendar.convertICS(text);
 
-const calendar = await scraping();
+const calendar = await scraping(c);
 if (!calendar) {
   console.error("スクレイピング失敗");
   Deno.exit();
