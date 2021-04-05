@@ -1,5 +1,7 @@
 # 高専カレンダー
 
+![img](img/banner.png)
+
 各高専の行事予定をiCalendar形式で提供します。
 
 ## 対応状況
