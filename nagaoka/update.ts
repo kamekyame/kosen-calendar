@@ -1,6 +1,7 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar } from "../util.ts";
+import { createKosenCalendar, pathResolver } from "../util.ts";
+const resolver = pathResolver(import.meta);
 
 async function scraping(oldCalendar?: VCalendar) {
   const calendar = oldCalendar ||
@@ -126,7 +127,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return calendar;
 }
 
-const fileName = `nagaoka.ics`;
+const fileName = resolver(`nagaoka.ics`);
 
 let text = "";
 try {

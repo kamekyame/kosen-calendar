@@ -1,6 +1,7 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar } from "../util.ts";
+import { createKosenCalendar, pathResolver } from "../util.ts";
+const resolver = pathResolver(import.meta);
 
 async function scraping(oldCalendar?: VCalendar) {
   const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
@@ -55,7 +56,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return { calendar, year };
 }
 
-const fileName = `fukui.ics`;
+const fileName = resolver(`./fukui.ics`);
 
 let text = "";
 try {
