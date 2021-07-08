@@ -14,13 +14,13 @@ async function scraping(oldCalendar?: VCalendar) {
   const yearMatch = titleH2.textContent.match(/\d+/);
   if (!yearMatch || yearMatch.length < 1) return;
   const year = parseInt(yearMatch[0]);
-  //console.log(year + "年度");
+  console.log(year + "年度");
 
   body.getElementById("entry-content")
     ?.getElementsByTagName("table").forEach(
       (monthTable, i) => {
         const month = (i + 4) % 12;
-        //console.log(month + "月");
+        console.log(month + "月");
 
         monthTable.getElementsByTagName("tr").forEach((dayTr) => {
           const dayTds = dayTr.getElementsByTagName("td");
@@ -30,7 +30,7 @@ async function scraping(oldCalendar?: VCalendar) {
             if (!dayMatch || dayMatch.length < 1) return;
             const day = parseInt(dayMatch[0]);
             const summary = eventTd.textContent;
-            //console.log(day + "日", summary);
+            console.log(day + "日", summary);
 
             const dtStart = new Date(0);
             dtStart.setFullYear(month <= 3 ? year + 1 : year, month - 1, day);
