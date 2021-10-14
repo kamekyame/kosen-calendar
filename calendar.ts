@@ -91,13 +91,23 @@ export class VCalendar {
     this.xWrRelcalId = xWrRelcalId || v4.generate();
   }
 
-  addEvent(event: VEvent) {
-    this.events.push(event);
+  addEvent(...event: VEvent[]) {
+    this.events.push(...event);
   }
 
   getEvents = () => this.events;
+  setEvents = (events: VEvent[]) => this.events = events;
+
+  sortingEvents = () => {
+    this.events.sort((a, b) => {
+      if (a.dtStart.getTime() < b.dtStart.getTime()) return -1;
+      if (a.dtStart.getTime() > b.dtStart.getTime()) return 1;
+      return 0;
+    });
+  };
 
   toICSString() {
+    this.sortingEvents();
     let str = "BEGIN:VCALENDAR\r\n";
     str += "VERSION:" + this.version + "\r\n";
     str += "PRODID:" + this.prodId + "\r\n";
@@ -114,7 +124,7 @@ export class VCalendar {
   }
 
   static convertICS(text: string) {
-    const lines = text.split("\r\n").map((e) => e.split(":"));
+    const lines = text.split(/\r\n|\n|\r/).map((e) => e.split(":"));
     //console.log(lines);
 
     // VCALENCARのBEGINとENDを取る
