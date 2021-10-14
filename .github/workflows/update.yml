@@ -46,6 +46,6 @@ jobs:
             git push --set-upstream origin ${{ steps.branch.outputs.name }}
         - name: Create Pull Request
           if: steps.diff.outcome == 'failure'
-          run: gh pr create --title "Update Deno Dependency" --body-file body.txt
+          run: gh pr create --title "Update ICS file" --body ""
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
