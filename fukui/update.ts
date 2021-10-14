@@ -3,17 +3,17 @@ import { VCalendar, VEvent } from "../calendar.ts";
 import { createKosenCalendar, pathResolver } from "../util.ts";
 const resolver = pathResolver(import.meta);
 
-async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
+async function getScrapeEvents() {
+  const events: VEvent[] = [];
 
   const dom = await getDOM("https://www.fukui-nct.ac.jp/life/event/");
-  if (!dom) return;
+  if (!dom) throw Error("Can not get dom");
   const body = dom.body; //dom.window.document.body;
 
   const titleH2 = body.querySelector("#entry-content h2");
-  if (!titleH2) return;
+  if (!titleH2) throw Error("Can not get #entry-content h2");
   const yearMatch = titleH2.textContent.match(/\d+/);
-  if (!yearMatch || yearMatch.length < 1) return;
+  if (!yearMatch || yearMatch.length < 1) throw Error("Can not get year");
   const year = parseInt(yearMatch[0]);
   console.log(year + "年度");
 
@@ -38,21 +38,55 @@ async function scraping(oldCalendar?: VCalendar) {
             const dtEnd = new Date(0);
             dtEnd.setFullYear(month <= 3 ? year + 1 : year, month - 1, day + 1);
 
-            const events = calendar.getEvents();
-            let event = events.find((e) =>
-              e.dtStart.getTime() == dtStart.getTime() &&
-              e.dtEnd.getTime() == dtEnd.getTime()
-            );
-            if (event) {
-              event.summary = summary;
-            } else {
-              event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
-              calendar.addEvent(event);
-            }
+            const event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
+            events.push(event);
           }
         });
       },
     );
+  return { events, year };
+}
+
+async function scraping(oldCalendar?: VCalendar) {
+  const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
+
+  let { events: newEvents, year } = await getScrapeEvents();
+  let oldEvents = calendar.getEvents();
+
+  // 古い方のみ：古い方から削除
+  // 新しい方のみ：なにもしない
+  // どちらにもある：新しい方から削除
+  // 古い方に新しい方をマージ
+
+  oldEvents = oldEvents.filter((o) => {
+    if (
+      o.dtStart.getTime() < new Date(year, 4 - 1).getTime() ||
+      o.dtStart.getTime() >= new Date(year + 1, 4 - 1).getTime()
+    ) {
+      return true;
+    }
+    const sameEvent = newEvents.some((n) => {
+      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
+      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
+      else if (n.summary !== o.summary) return false;
+      return true;
+    });
+    if (sameEvent) return true;
+    else return false;
+  });
+
+  newEvents = newEvents.filter((n) => {
+    const sameEvent = oldEvents.some((o) => {
+      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
+      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
+      else if (n.summary !== o.summary) return false;
+      return true;
+    });
+    if (sameEvent) return false;
+    else return true;
+  });
+
+  calendar.setEvents([...oldEvents, ...newEvents]);
   return { calendar, year };
 }
 
@@ -69,7 +103,7 @@ const c = VCalendar.convertICS(text);
 const scrapingData = await scraping(c);
 if (!scrapingData) {
   console.error("スクレイピング失敗");
-  Deno.exit();
+  Deno.exit(1);
 }
 
 const icsText = scrapingData.calendar.toICSString();
