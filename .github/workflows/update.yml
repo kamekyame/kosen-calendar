@@ -1,0 +1,52 @@
+name: Deno deps checker
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-check:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - name: Git config
+          run: |
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+        - uses: denoland/setup-deno@v1
+          with:
+            deno-version: v1.x
+        - name: Check update
+          run: |
+            deno run -A ./update.ts
+        - name: Git diff
+          id: diff
+          continue-on-error: true
+          run: |
+            git add .
+            git diff --cached --quiet
+        - name: Create Branch Name
+          if: steps.diff.outcome == 'failure'
+          id: branch
+          env:
+            TZ: 'Asia/Tokyo'
+          run: | 
+            DATE=`date +"%Y%m%d"`
+            BRANCH_NAME="update_$DATE"
+            echo "::set-output name=name::$BRANCH_NAME"
+        - name: Git checkout
+          if: steps.diff.outcome == 'failure'
+          run: | 
+            echo ${{ steps.branch.outputs.name }}
+            git checkout -b ${{ steps.branch.outputs.name }}
+        - name: Git commit
+          if: steps.diff.outcome == 'failure'
+          run: |
+            git commit -m "Update dependency"
+            git push --set-upstream origin ${{ steps.branch.outputs.name }}
+        - name: Create Pull Request
+          if: steps.diff.outcome == 'failure'
+          run: gh pr create --title "Update Deno Dependency" --body-file body.txt
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

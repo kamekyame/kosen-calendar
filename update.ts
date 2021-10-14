@@ -1,0 +1,1 @@
+import "./fukui/update.ts";
