@@ -1,5 +1,4 @@
-name: Deno deps checker
-
+name: ICS update checker
 on:
   schedule:
     - cron: "0 0 * * *"
