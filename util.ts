@@ -1,4 +1,4 @@
-import { Standard, VCalendar, VTimezone } from "./calendar.ts";
+import { Standard, VCalendar, VEvent, VTimezone } from "./calendar.ts";
 
 export function createKosenCalendar(shortKosenName: string, kosenName: string) {
   const standard = new Standard({ tzOffsetFrom: "+0900", tzOffsetTo: "+0900" });
@@ -12,6 +12,47 @@ export function createKosenCalendar(shortKosenName: string, kosenName: string) {
   });
 
   return calendar;
+}
+
+export function compEvents(
+  oldEvents: VEvent[],
+  newEvents: VEvent[],
+  year: number,
+) {
+  // 古い方のみ：古い方から削除
+  // 新しい方のみ：なにもしない
+  // どちらにもある：新しい方から削除
+  // 古い方に新しい方をマージ
+
+  oldEvents = oldEvents.filter((o) => {
+    if (
+      o.dtStart.getTime() < new Date(year, 4 - 1).getTime() ||
+      o.dtStart.getTime() >= new Date(year + 1, 4 - 1).getTime()
+    ) {
+      return true;
+    }
+    const sameEvent = newEvents.some((n) => {
+      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
+      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
+      else if (n.summary !== o.summary) return false;
+      return true;
+    });
+    if (sameEvent) return true;
+    else return false;
+  });
+
+  newEvents = newEvents.filter((n) => {
+    const sameEvent = oldEvents.some((o) => {
+      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
+      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
+      else if (n.summary !== o.summary) return false;
+      return true;
+    });
+    if (sameEvent) return false;
+    else return true;
+  });
+
+  return [...oldEvents, ...newEvents];
 }
 
 export { pathResolver } from "https://kamekyame.github.io/deno_tools/path/mod.ts";

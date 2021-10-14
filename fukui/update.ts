@@ -1,6 +1,6 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar, pathResolver } from "../util.ts";
+import { compEvents, createKosenCalendar, pathResolver } from "../util.ts";
 const resolver = pathResolver(import.meta);
 
 async function getScrapeEvents() {
@@ -50,43 +50,13 @@ async function getScrapeEvents() {
 async function scraping(oldCalendar?: VCalendar) {
   const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
 
-  let { events: newEvents, year } = await getScrapeEvents();
-  let oldEvents = calendar.getEvents();
+  const { events: newEvents, year } = await getScrapeEvents();
+  const oldEvents = calendar.getEvents();
 
-  // 古い方のみ：古い方から削除
-  // 新しい方のみ：なにもしない
-  // どちらにもある：新しい方から削除
-  // 古い方に新しい方をマージ
+  const allEvents = compEvents(oldEvents, newEvents, year);
 
-  oldEvents = oldEvents.filter((o) => {
-    if (
-      o.dtStart.getTime() < new Date(year, 4 - 1).getTime() ||
-      o.dtStart.getTime() >= new Date(year + 1, 4 - 1).getTime()
-    ) {
-      return true;
-    }
-    const sameEvent = newEvents.some((n) => {
-      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
-      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
-      else if (n.summary !== o.summary) return false;
-      return true;
-    });
-    if (sameEvent) return true;
-    else return false;
-  });
+  calendar.setEvents(allEvents);
 
-  newEvents = newEvents.filter((n) => {
-    const sameEvent = oldEvents.some((o) => {
-      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
-      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
-      else if (n.summary !== o.summary) return false;
-      return true;
-    });
-    if (sameEvent) return false;
-    else return true;
-  });
-
-  calendar.setEvents([...oldEvents, ...newEvents]);
   return { calendar, year };
 }
 

@@ -1,20 +1,19 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar, pathResolver } from "../util.ts";
+import { compEvents, createKosenCalendar, pathResolver } from "../util.ts";
 const resolver = pathResolver(import.meta);
 
-async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar ||
-    createKosenCalendar("北九州高専", "北九州高等専門学校");
+async function getScrapeEvents() {
+  const events: VEvent[] = [];
 
   const dom = await getDOM("https://www.kct.ac.jp/katudou/gyouji.html");
-  if (!dom) return;
+  if (!dom) throw Error("Can not get dom");
   const body = dom.body;
   //console.log(body.innerHTML);
 
   const main = body.querySelector("#main");
   const yearText = main?.querySelector("h3")?.innerHTML.match(/\d+/);
-  if (!yearText) return;
+  if (!yearText) throw Error("Can not get year");
   const year = parseInt(yearText[0]) + 2018;
   console.log(year + "年度");
 
@@ -40,21 +39,31 @@ async function scraping(oldCalendar?: VCalendar) {
       const dtEnd = new Date(0);
       dtEnd.setFullYear(month <= 3 ? year + 1 : year, month - 1, day + 1);
 
-      const events = calendar.getEvents();
       summaries.forEach((summary) => {
-        let event = events.find((e) =>
-          e.dtStart.getTime() == dtStart.getTime() &&
-          e.dtEnd.getTime() == dtEnd.getTime() && e.summary === summary
-        );
-        if (event) {
-          event.summary = summary;
-        } else {
-          event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
-          calendar.addEvent(event);
-        }
+        const event = new VEvent({
+          dtStart,
+          dtEnd,
+          summary: summary.trim(),
+          allDay: true,
+        });
+        events.push(event);
       });
     },
   );
+
+  return { events, year };
+}
+
+async function scraping(oldCalendar?: VCalendar) {
+  const calendar = oldCalendar ||
+    createKosenCalendar("北九州高専", "北九州高等専門学校");
+
+  const oldEvents = calendar.getEvents();
+  const { events: newEvents, year } = await getScrapeEvents();
+
+  const allEvents = compEvents(oldEvents, newEvents, year);
+
+  calendar.setEvents(allEvents);
 
   return calendar;
 }
