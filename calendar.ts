@@ -124,9 +124,11 @@ export class VCalendar {
   }
 
   static convertICS(text: string) {
-    const lines = text.split(/\n|\n|\r/).map((e) =>
-      e.match(/^(.*?):(.*)$/)?.slice(1) || []
-    );
+    const lines = text.split(/\n|\n|\r/).flatMap((e) => {
+      const match = e.match(/^(.*?):(.*)$/)?.slice(1);
+      if (match) return [match];
+      else return [[]];
+    });
     //console.log(lines);
 
     // VCALENCARのBEGINとENDを取る
