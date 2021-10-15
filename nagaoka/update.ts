@@ -1,14 +1,13 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar, pathResolver } from "../util.ts";
+import { compEvents, createKosenCalendar, pathResolver } from "../util.ts";
 const resolver = pathResolver(import.meta);
 
-async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar ||
-    createKosenCalendar("長岡高専", "長岡工業高等専門学校");
+async function getScrapeEvents() {
+  const events: VEvent[] = [];
 
   const dom = await getDOM("https://www.nagaoka-ct.ac.jp/campus/213.html");
-  if (!dom) return;
+  if (!dom) throw Error("Can not get dom");
   const body = dom.body;
   //console.log(body.innerHTML);
 
@@ -19,7 +18,7 @@ async function scraping(oldCalendar?: VCalendar) {
     /[０-９]/g,
     (s) => String.fromCharCode(s.charCodeAt(0) - 65248),
   ).match(/\d+/);
-  if (!yearText) return;
+  if (!yearText) throw Error("Can not get year");
   const year = parseInt(yearText[0]) + 2018;
   console.log(yearText, year);
 
@@ -57,19 +56,13 @@ async function scraping(oldCalendar?: VCalendar) {
 
       const dtStart = new Date(start.getTime());
       const dtEnd = new Date(end.getTime());
-      const summary = summaryTd.textContent;
+      const summaries = summaryTd.textContent.split(/\n|\n|\r/);
 
-      const events = calendar.getEvents();
-      let event = events.find((e) =>
-        e.dtStart.getTime() == start.getTime() &&
-        e.dtEnd.getTime() == end.getTime() && e.summary === summary
-      );
-      if (event) {
-        event.summary = summary;
-      } else {
-        event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
-        calendar.addEvent(event);
-      }
+      summaries.forEach((summary) => {
+        const event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
+        events.push(event);
+      });
+
       /*const event = new VEvent({
         start: new Date(start.getTime()),
         end: new Date(end.getTime()),
@@ -80,54 +73,25 @@ async function scraping(oldCalendar?: VCalendar) {
     },
   );
 
-  /*const main = body.querySelector("#main");
-  const yearText = main?.querySelector("h3")?.innerHTML.match(/\d+/);
-  if (!yearText) return;
-  const year = parseInt(yearText[0]) + 2018;
-  console.log(year + "年度");
+  return { events, year };
+}
 
-  let month = 4;
-  main?.querySelector("table tbody")?.getElementsByTagName("tr").forEach(
-    (dayTr) => {
-      let dayTds = dayTr.getElementsByTagName("td");
-      if (dayTds.length === 3) {
-        const monthText = dayTds[0].textContent.match(/\d+/);
-        if (!monthText) return;
-        month = parseInt(monthText[0]);
-        console.log(month + "月");
-        dayTds = dayTds.slice(1);
-      }
-      const dayText = dayTds[0].textContent.match(/\d+/);
-      if (!dayText) return;
-      const day = parseInt(dayText[0]);
-      const summaries = dayTds[1].innerHTML.replaceAll("\n", "").split("<br>");
-      console.log("\t" + day + "日", summaries);
+async function scraping(oldCalendar?: VCalendar) {
+  const calendar = oldCalendar ||
+    createKosenCalendar("長岡高専", "長岡工業高等専門学校");
 
-      const start = new Date(0);
-      start.setFullYear(month <= 3 ? year + 1 : year, month - 1, day);
-      const end = new Date(0);
-      end.setFullYear(month <= 3 ? year + 1 : year, month - 1, day + 1);
+  const oldEvents = calendar.getEvents();
+  const { events: newEvents, year } = await getScrapeEvents();
 
-      const events = calendar.getEvents();
-      summaries.forEach((summary) => {
-        let event = events.find((e) =>
-          e.start.getTime() == start.getTime() &&
-          e.end.getTime() == end.getTime() && e.summary === summary
-        );
-        if (event) {
-          event.summary = summary;
-        } else {
-          event = new VEvent({ start, end, summary, allDay: true });
-          calendar.addEvent(event);
-        }
-      });
-    },
-  );*/
+  const allEvents = compEvents(oldEvents, newEvents, year);
+
+  calendar.setEvents(allEvents);
 
   return calendar;
 }
 
 const fileName = resolver(`nagaoka.ics`);
+console.log(fileName);
 
 let text = "";
 try {
