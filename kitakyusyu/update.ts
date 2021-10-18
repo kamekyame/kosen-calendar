@@ -1,7 +1,7 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { compEvents, createKosenCalendar, pathResolver } from "../util.ts";
-const resolver = pathResolver(import.meta);
+import { compEvents, createKosenCalendar, resolver } from "../util.ts";
+const resolve = resolver(import.meta);
 
 async function getScrapeEvents() {
   const events: VEvent[] = [];
@@ -68,7 +68,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return calendar;
 }
 
-const fileName = resolver(`kitakyusyu.ics`);
+const fileName = resolve(`kitakyusyu.ics`);
 
 let text = "";
 try {

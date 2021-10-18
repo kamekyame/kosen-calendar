@@ -1,7 +1,7 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
-import { createKosenCalendar, pathResolver } from "../util.ts";
-const resolver = pathResolver(import.meta);
+import { createKosenCalendar, resolver } from "../util.ts";
+const resolve = resolver(import.meta);
 
 const type = ["共通", "寮", "本科", "専攻科"];
 const year = parseInt(Deno.args[0]);
@@ -57,7 +57,7 @@ async function scraping(oldCalendar?: VCalendar) {
   return calendar;
 }
 
-const fileName = resolver(`yatsushiro.ics`);
+const fileName = resolve(`yatsushiro.ics`);
 
 let text = "";
 try {
