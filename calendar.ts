@@ -91,30 +91,44 @@ export class VCalendar {
     this.xWrRelcalId = xWrRelcalId || v4.generate();
   }
 
-  addEvent(event: VEvent) {
-    this.events.push(event);
+  addEvent(...event: VEvent[]) {
+    this.events.push(...event);
   }
 
   getEvents = () => this.events;
+  setEvents = (events: VEvent[]) => this.events = events;
+
+  sortingEvents = () => {
+    this.events.sort((a, b) => {
+      if (a.dtStart.getTime() < b.dtStart.getTime()) return -1;
+      if (a.dtStart.getTime() > b.dtStart.getTime()) return 1;
+      return 0;
+    });
+  };
 
   toICSString() {
-    let str = "BEGIN:VCALENDAR\r\n";
-    str += "VERSION:" + this.version + "\r\n";
-    str += "PRODID:" + this.prodId + "\r\n";
-    if (this.xWrCalName) str += "X-WR-CALNAME:" + this.xWrCalName + "\r\n";
-    if (this.xWrCalDesc) str += "X-WR-CALDESC:" + this.xWrCalDesc + "\r\n";
-    if (this.xWrTimezone) str += "X-WR-TIMEZONE:" + this.xWrTimezone + "\r\n";
-    str += "X-WR-RELCALID:" + this.xWrRelcalId + "\r\n";
+    this.sortingEvents();
+    let str = "BEGIN:VCALENDAR\n";
+    str += "VERSION:" + this.version + "\n";
+    str += "PRODID:" + this.prodId + "\n";
+    if (this.xWrCalName) str += "X-WR-CALNAME:" + this.xWrCalName + "\n";
+    if (this.xWrCalDesc) str += "X-WR-CALDESC:" + this.xWrCalDesc + "\n";
+    if (this.xWrTimezone) str += "X-WR-TIMEZONE:" + this.xWrTimezone + "\n";
+    str += "X-WR-RELCALID:" + this.xWrRelcalId + "\n";
     if (this.timezone) str += this.timezone.toICSString();
     this.events.forEach((e) => {
       str += e.toICSString();
     });
-    str += "END:VCALENDAR\r\n";
+    str += "END:VCALENDAR\n";
     return str;
   }
 
   static convertICS(text: string) {
-    const lines = text.split("\r\n").map((e) => e.split(":"));
+    const lines = text.split(/\n|\n|\r/).flatMap((e) => {
+      const match = e.match(/^(.*?):(.*)$/)?.slice(1);
+      if (match) return [match];
+      else return [[]];
+    });
     //console.log(lines);
 
     // VCALENCARのBEGINとENDを取る
@@ -182,10 +196,10 @@ export class VTimezone {
   }
 
   toICSString() {
-    let str = "BEGIN:VTIMEZONE\r\n";
-    str += "TZID:" + this.tzId + "\r\n";
+    let str = "BEGIN:VTIMEZONE\n";
+    str += "TZID:" + this.tzId + "\n";
     str += this.standard.toICSString();
-    str += "END:VTIMEZONE\r\n";
+    str += "END:VTIMEZONE\n";
     return str;
   }
 
@@ -235,11 +249,11 @@ export class Standard {
   }
 
   toICSString() {
-    let str = "BEGIN:STANDARD\r\n";
-    str += "DTSTART:" + toISOString(this.dtStart) + "\r\n";
-    str += "TZOFFSETFROM:" + this.tzOffsetFrom + "\r\n";
-    str += "TZOFFSETTO:" + this.tzOffsetTo + "\r\n";
-    str += "END:STANDARD\r\n";
+    let str = "BEGIN:STANDARD\n";
+    str += "DTSTART:" + toISOString(this.dtStart) + "\n";
+    str += "TZOFFSETFROM:" + this.tzOffsetFrom + "\n";
+    str += "TZOFFSETTO:" + this.tzOffsetTo + "\n";
+    str += "END:STANDARD\n";
     return str;
   }
 
@@ -294,15 +308,15 @@ export class VEvent {
   }
 
   toICSString() {
-    let str = "BEGIN:VEVENT\r\n";
+    let str = "BEGIN:VEVENT\n";
     str += "DTSTART" + (this.allDay ? ";VALUE=DATE:" : ":") +
-      toISOString(this.dtStart, this.allDay) + "\r\n";
+      toISOString(this.dtStart, this.allDay) + "\n";
     str += "DTEND" + (this.allDay ? ";VALUE=DATE:" : ":") +
-      toISOString(this.dtEnd, this.allDay) + "\r\n";
-    str += "SUMMARY:" + this.summary + "\r\n";
-    str += "DTSTAMP:" + toISOString(this.dtStamp) + "\r\n";
-    str += "UID:" + this.uId + "\r\n";
-    str += "END:VEVENT" + "\r\n";
+      toISOString(this.dtEnd, this.allDay) + "\n";
+    str += "SUMMARY:" + this.summary + "\n";
+    str += "DTSTAMP:" + toISOString(this.dtStamp) + "\n";
+    str += "UID:" + this.uId + "\n";
+    str += "END:VEVENT" + "\n";
     return str;
   }
 
