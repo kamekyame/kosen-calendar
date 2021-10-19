@@ -59,4 +59,11 @@ export function resolver(meta: ImportMeta) {
   return (path: string) => new URL(path, meta.url);
 }
 
+export function fullToHalf(str?: string) {
+  return str?.replace(
+    /[Ａ-Ｚａ-ｚ０-９　]/g,
+    (s) => s === "　" ? " " : String.fromCharCode(s.charCodeAt(0) - 65248),
+  ) || "";
+}
+
 export { pathResolver } from "https://kamekyame.github.io/deno_tools/path/mod.ts";
