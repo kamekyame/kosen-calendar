@@ -14,10 +14,11 @@ async function getScrapeEvents() {
   const section = body.querySelector(".tinyMCE");
   //console.log(section?.innerHTML);
 
-  const yearText = section?.querySelector("h3")?.textContent.replace(
-    /[０-９]/g,
-    (s) => String.fromCharCode(s.charCodeAt(0) - 65248),
-  ).match(/\d+/);
+  const yearText = section?.querySelector("h3:nth-child(2)")?.textContent
+    .replace(
+      /[０-９]/g,
+      (s) => String.fromCharCode(s.charCodeAt(0) - 65248),
+    ).match(/\d+/);
   if (!yearText) throw Error("Can not get year");
   const year = parseInt(yearText[0]) + 2018;
   console.log(yearText, year);
