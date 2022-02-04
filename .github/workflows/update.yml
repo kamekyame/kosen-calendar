@@ -9,10 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: checkout
-        run: |
-          git checkout -B ics-update
-          git merge master origin/master
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
