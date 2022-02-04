@@ -12,7 +12,7 @@ async function getScrapeEvents() {
   //console.log(body.innerHTML);
 
   const section = body.querySelector(".tinyMCE");
-  //console.log(section?.innerHTML);
+  console.log(section?.innerHTML);
 
   const yearText = section?.querySelector("h3:nth-child(2)")?.textContent
     .replace(
