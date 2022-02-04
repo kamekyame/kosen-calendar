@@ -14,7 +14,7 @@ async function getScrapeEvents() {
   const section = body.querySelector(".tinyMCE");
   //console.log(section?.innerHTML);
 
-  const yearText = section?.querySelector("h3:nth-child(2)")?.textContent
+  const yearText = section?.querySelectorAll("h3")[1]?.textContent
     .replace(
       /[０-９]/g,
       (s) => String.fromCharCode(s.charCodeAt(0) - 65248),
