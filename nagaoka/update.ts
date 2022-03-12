@@ -6,15 +6,15 @@ const resolve = resolver(import.meta);
 async function getScrapeEvents() {
   const events: VEvent[] = [];
 
-  const dom = await getDOM("https://www.nagaoka-ct.ac.jp/campus/213.html");
+  const dom = await getDOM("https://www.nagaoka-ct.ac.jp/zaikousei/calendar/");
   if (!dom) throw Error("Can not get dom");
   const body = dom.body;
   //console.log(body.innerHTML);
 
-  const section = body.querySelector(".tinyMCE");
+  const section = body.querySelector("#page");
   //console.log(section?.innerHTML);
 
-  const yearText = section?.querySelectorAll("h3")[1]?.textContent
+  const yearText = section?.querySelectorAll("h3")[0]?.textContent
     .replace(
       /[０-９]/g,
       (s) => String.fromCharCode(s.charCodeAt(0) - 65248),
