@@ -16,15 +16,15 @@
 
 ## 対応高専
 
-| 学校番号   | 高専名      | URL                                                                                                                                                                                                           | 備考                         |
-| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| 703003 | 長岡高専     | https://kamekyame.github.io/kosen-calendar/nagaoka/nagaoka.ics                                                                                                                                                | 有志の方が手打ちで作ってくれました。         |
-| 705006 | 石川高専     | https://kamekyame.github.io/kosen-calendar/ishikawa/ishikawa_2021.ics                                                                                                                                         | 有志の方が手打ちで作ってくれました。         |
-| 705007 | 福井高専     | https://kamekyame.github.io/kosen-calendar/fukui/fukui.ics                                                                                                                                                    |                            |
-| 707003 | 津山高専     | https://kamekyame.github.io/kosen-calendar/tsuyama/tsuyama.ics                                                                                                                                                |                            |
-| 708005 | 弓削商船高専   | https://calendar.google.com/calendar/ical/yugencmt%40gmail.com/public/basic.ics（共通）<br>https://calendar.google.com/calendar/ical/6rtpjgchl917teni5o99sni1c0%40group.calendar.google.com/public/basic.ics（専攻科） | 弓削商船高専が直接公開しているカレンダーとなります。 |
-| 709006 | 北九州高専    | https://kamekyame.github.io/kosen-calendar/kitakyusyu/kitakyusyu.ics                                                                                                                                          |                            |
-| 709011 | 熊本高専(八代) | https://kamekyame.github.io/kosen-calendar/kumamoto/yatsushiro.ics                                                                                                                                            |                            |
+| 学校番号   | 高専名      | URL                                                                                                                                                                                                           | 備考                            |
+| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 703003 | 長岡高専     | https://kamekyame.github.io/kosen-calendar/nagaoka/nagaoka.ics                                                                                                                                                | 有志の方が手打ちで作ってくれました。            |
+| 705006 | 石川高専     | https://kamekyame.github.io/kosen-calendar/ishikawa/ishikawa_2021.ics                                                                                                                                         | 有志の方が手打ちで作ってくれました。            |
+| 705007 | 福井高専     | https://kamekyame.github.io/kosen-calendar/fukui/fukui.ics                                                                                                                                                    | 2022年度からPDFでの配布に変更されたため非対応です。 |
+| 707003 | 津山高専     | https://kamekyame.github.io/kosen-calendar/tsuyama/tsuyama.ics                                                                                                                                                |                               |
+| 708005 | 弓削商船高専   | https://calendar.google.com/calendar/ical/yugencmt%40gmail.com/public/basic.ics（共通）<br>https://calendar.google.com/calendar/ical/6rtpjgchl917teni5o99sni1c0%40group.calendar.google.com/public/basic.ics（専攻科） | 弓削商船高専が直接公開しているカレンダーとなります。    |
+| 709006 | 北九州高専    | https://kamekyame.github.io/kosen-calendar/kitakyusyu/kitakyusyu.ics                                                                                                                                          |                               |
+| 709011 | 熊本高専(八代) | https://kamekyame.github.io/kosen-calendar/kumamoto/yatsushiro.ics                                                                                                                                            |                               |
 
 ## 協力お願い
 
