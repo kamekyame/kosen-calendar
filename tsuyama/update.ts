@@ -24,12 +24,12 @@ async function getScrapeEvents() {
   const title = contents.querySelector("h3");
   const yearText = fullToHalf(title?.textContent).match(/\d+/);
   if (!yearText) throw Error("Can not get year");
-  const year = parseInt(yearText[0]) + 2019;
+  const year = parseInt(yearText[0]) + 2018;
   console.log(year + "年度");
 
   const monthUls = contents.getElementsByTagName("ul");
   monthUls.forEach((monthUl, i) => {
-    const month = (i + 4) % 12;
+    const month = i + 4;
     console.log(month + "月");
 
     const dayLi = monthUl.getElementsByTagName("li");
@@ -40,9 +40,11 @@ async function getScrapeEvents() {
       );
 
       const daysText = dayText.split("・");
-      const summaries = summariesText.split("、");
+      const summaries = Array.from(
+        summariesText.matchAll(/[^、]*（.*）[^、]*|[^、]+/g),
+      );
 
-      console.log(rawText, daysText, summaries /*, match*/);
+      // console.log(rawText, daysText, summaries /*, match*/);
 
       daysText.forEach((dayText) => {
         const dayMatch = dayText.match(
@@ -53,17 +55,19 @@ async function getScrapeEvents() {
         const fromDay = parseInt(fromDayText);
         const toMonth = toMonthText ? parseInt(toMonthText) : month;
         const toDay = toDayText ? parseInt(toDayText) : fromDay;
-        console.log(dayMatch);
+        // console.log(dayMatch);
 
-        summaries.forEach((summary) => {
+        summaries.forEach((summaryMatch) => {
+          const summary = summaryMatch[0];
           const dtStart = new Date(0);
-          dtStart.setFullYear(month <= 3 ? year + 1 : year, month - 1, fromDay);
+          dtStart.setFullYear(year, month - 1, fromDay);
           const dtEnd = new Date(0);
           dtEnd.setFullYear(
             toMonth <= 3 ? year + 1 : year,
             toMonth - 1,
             toDay + 1,
           );
+          console.log(rawText, [dayText, summary]);
 
           const event = new VEvent({ dtStart, dtEnd, summary, allDay: true });
           events.push(event);
