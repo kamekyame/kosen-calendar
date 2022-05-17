@@ -8,9 +8,9 @@ import {
 
 async function getHTML(url: string) {
   const res = await fetch(url);
-  if (res.status !== 200) console.error("HTTP Response status is not 200");
+  if (res.status !== 200) throw Error("HTTP Response status is not 200");
   if (res.headers.get("content-type")?.indexOf("text/html") === -1) {
-    console.error(`${url} is not html`);
+    throw Error(`${url} is not html`);
   }
   const html = await res.text();
   return html;
