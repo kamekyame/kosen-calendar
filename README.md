@@ -1,8 +1,12 @@
-# 高専カレンダー
+# kosen-calendar
 
 ![img](img/banner.png)
 
 各高専の行事予定をiCalendar形式で提供します。
+
+# 公式サイト
+
+https://kamekyame.com/contents/kosen-calendar
 
 ## 対応状況
 
