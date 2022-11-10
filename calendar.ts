@@ -1,5 +1,3 @@
-import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
-
 function toISOString(date: Date, allDay = false) {
   function pad(number: number) {
     if (number < 10) {
@@ -88,7 +86,7 @@ export class VCalendar {
     this.xWrCalName = xWrCalName || "";
     this.xWrCalDesc = xWrCalDesc || "";
     this.xWrTimezone = xWrTimezone || "";
-    this.xWrRelcalId = xWrRelcalId || v4.generate();
+    this.xWrRelcalId = xWrRelcalId || crypto.randomUUID();
   }
 
   addEvent(...event: VEvent[]) {
@@ -304,7 +302,7 @@ export class VEvent {
     this.summary = summary;
     this.dtStamp = dtStamp || new Date();
     this.allDay = allDay || false;
-    this.uId = uId || v4.generate();
+    this.uId = uId || crypto.randomUUID();
   }
 
   toICSString() {
