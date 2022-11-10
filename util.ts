@@ -65,5 +65,3 @@ export function fullToHalf(str?: string) {
     (s) => s === "　" ? " " : String.fromCharCode(s.charCodeAt(0) - 65248),
   ) || "";
 }
-
-export { pathResolver } from "https://kamekyame.github.io/deno_tools/path/mod.ts";

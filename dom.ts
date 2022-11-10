@@ -1,6 +1,5 @@
 import {
   DOMParser,
-  Element,
 } from "https://deno.land/x/deno_dom@v0.1.35-alpha/deno-dom-wasm.ts";
 
 //import jsdom from "https://dev.jspm.io/jsdom";

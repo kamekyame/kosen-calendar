@@ -9,3 +9,14 @@ jobs:
   dfl-check:
     name: deno format & lint check
     uses: kamekyame/gh-actions-test/.github/workflows/dfl-check.yml@main
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2
+      
+      - name: Run Tests
+        run: ./script.sh check
