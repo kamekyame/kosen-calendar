@@ -1,0 +1,11 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  dfl-check:
+    name: deno format & lint check
+    uses: kamekyame/gh-actions-test/.github/workflows/dfl-check.yml@main

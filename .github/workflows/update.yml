@@ -1,4 +1,4 @@
-name: update checker
+name: Update checker
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -28,6 +28,7 @@ jobs:
           deno run -A ./update.ts
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
+        if: ${{ always() }}
         with:
           commit-message: "feat: update ics file"
           token: ${{ steps.generate_token.outputs.token }}
