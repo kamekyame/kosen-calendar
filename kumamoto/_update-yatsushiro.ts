@@ -65,7 +65,7 @@ try {
 } catch (e) {
   console.log(e);
 }
-const c = VCalendar.convertICS(text);
+const _c = VCalendar.convertICS(text);
 
 const calendar = await scraping();
 if (!calendar) {
