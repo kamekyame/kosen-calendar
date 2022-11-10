@@ -1,4 +1,4 @@
-import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
+import { v4 } from "https://deno.land/std@0.163.0/uuid/mod.ts";
 
 function toISOString(date: Date, allDay = false) {
   function pad(number: number) {

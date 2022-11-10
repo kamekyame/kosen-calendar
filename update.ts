@@ -1,5 +1,5 @@
-import * as log from "https://deno.land/std@0.139.0/log/mod.ts";
-import { expandGlob } from "https://deno.land/std@0.139.0/fs/mod.ts";
+import * as log from "https://deno.land/std@0.163.0/log/mod.ts";
+import { expandGlob } from "https://deno.land/std@0.163.0/fs/mod.ts";
 
 let isError = false;
 
