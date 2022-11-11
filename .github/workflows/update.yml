@@ -25,7 +25,7 @@ jobs:
           deno-version: v1.x
       - name: Check update
         run: |
-          deno run -A ./update.ts
+          ./script.sh update
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         if: ${{ always() }}
