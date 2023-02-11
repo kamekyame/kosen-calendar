@@ -48,7 +48,8 @@ async function getScrapeEvents() {
 }
 
 async function scraping(oldCalendar?: VCalendar) {
-  const calendar = oldCalendar || createKosenCalendar("福井高専", "福井工業高等専門学校");
+  const calendar = oldCalendar ||
+    createKosenCalendar("福井高専", "福井工業高等専門学校");
 
   const { events: newEvents, year } = await getScrapeEvents();
   const oldEvents = calendar.getEvents();
