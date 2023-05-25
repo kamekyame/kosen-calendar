@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "update": "deno run -A --unsafely-ignore-certificate-errors=www.nagaoka-ct.ac.jp,www.tsuyama-ct.ac.jp",
+    "check": "deno check -A"
+  }
+}
