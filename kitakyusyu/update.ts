@@ -1,57 +1,86 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
 import { compEvents, createKosenCalendar, resolver } from "../util.ts";
+import { Element } from "https://deno.land/x/deno_dom@v0.1.38/src/dom/element.ts";
 const resolve = resolver(import.meta);
 
 async function getScrapeEvents() {
   const events: VEvent[] = [];
 
-  const dom = await getDOM("https://www.kct.ac.jp/katudou/gyouji.html");
+  const dom = await getDOM("https://www.kct.ac.jp/campuslife/schedule");
   if (!dom) throw Error("Can not get dom");
   const body = dom.body;
-  //console.log(body.innerHTML);
 
-  const main = body.querySelector("#main");
+  const main = body.querySelector("#page_wrap");
   const yearText = main?.querySelector("h3")?.innerHTML.match(/\d+/);
   if (!yearText) throw Error("Can not get year");
-  const year = parseInt(yearText[0]) + 2018;
-  console.log(year + "年度");
+  const baseYear = parseInt(yearText[0]) + 2018;
+  console.log(baseYear + "年度");
 
-  let month = 4;
-  main?.querySelector("table tbody")?.getElementsByTagName("tr").forEach(
-    (dayTr) => {
-      let dayTds = dayTr.getElementsByTagName("td");
-      if (dayTds.length === 3) {
-        const monthText = dayTds[0].textContent.match(/\d+/);
-        if (!monthText) return;
-        month = parseInt(monthText[0]);
-        console.log(month + "月");
-        dayTds = dayTds.slice(1);
+  main?.querySelectorAll(".bge-ckeditor").forEach(
+    (monthDiv) => {
+      if (!(monthDiv instanceof Element)) {
+        throw Error("monthDiv is not Element");
       }
-      const dayText = dayTds[0].textContent.match(/\d+/);
-      if (!dayText) return;
-      const day = parseInt(dayText[0]);
-      const summaries = dayTds[1].innerHTML.replaceAll("\n", "").split("<br>");
-      console.log("\t" + day + "日", summaries);
+      const monthText = monthDiv.querySelector("p")?.innerText;
+      const monthMatch = monthText?.match(/(\d+)/);
+      if (!monthMatch) throw Error("Can not get month");
+      const month = parseInt(monthMatch[1]);
 
-      const dtStart = new Date(0);
-      dtStart.setFullYear(month <= 3 ? year + 1 : year, month - 1, day);
-      const dtEnd = new Date(0);
-      dtEnd.setFullYear(month <= 3 ? year + 1 : year, month - 1, day + 1);
+      const year = month >= 4 ? baseYear : baseYear + 1;
 
-      summaries.forEach((summary) => {
-        const event = new VEvent({
-          dtStart,
-          dtEnd,
-          summary: summary.trim(),
-          allDay: true,
+      console.log(`${year}年 ${month}月`);
+
+      monthDiv.querySelectorAll(".item-list").forEach((dayDiv) => {
+        if (!(dayDiv instanceof Element)) throw Error("dayDiv is not Element");
+        const dayText = dayDiv.querySelector(".item-date")?.innerText;
+        const dayMatch = dayText?.match(/(\d+)/);
+        if (!dayMatch) throw Error("Can not get day");
+        const day = parseInt(dayMatch[1]);
+
+        const dtStart = new Date(0);
+        dtStart.setFullYear(year, month - 1, day);
+
+        const summariesText = dayDiv.querySelector(".item-event")?.innerText;
+        if (!summariesText) throw Error("Can not get summaries");
+        const summaries = summariesText.replaceAll("＞\n", "＞ ").split("\n");
+
+        summaries.forEach((summary) => {
+          const m = summary.match(/\(～(?:(\d+)月)?(?:(\d+)日)\)/);
+          let toMonth = month;
+          let toDay = day;
+          if (m) {
+            // console.log(m);
+            const toText = m[0];
+            if (m[1]) toMonth = parseInt(m[1]);
+            if (m[2]) toDay = parseInt(m[2]);
+            const sum = summary.replace(toText, "");
+            summary = sum;
+          }
+
+          const dtEnd = new Date(0);
+          dtEnd.setFullYear(
+            toMonth <= 3 ? year + 1 : year,
+            toMonth - 1,
+            toDay + 1,
+          );
+          console.log(dtStart, dtEnd, summary);
+
+          summaries.forEach((summary) => {
+            const event = new VEvent({
+              dtStart,
+              dtEnd,
+              summary: summary.trim(),
+              allDay: true,
+            });
+            events.push(event);
+          });
         });
-        events.push(event);
       });
     },
   );
 
-  return { events, year };
+  return { events, year: baseYear };
 }
 
 async function scraping(oldCalendar?: VCalendar) {

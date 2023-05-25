@@ -1,17 +1,30 @@
 import {
   DOMParser,
 } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
+export * from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
 
-//import jsdom from "https://dev.jspm.io/jsdom";
-//const { JSDOM } = jsdom;
+const noCache = Deno.args.includes("--no-cache") ?? false;
+const tempDir = new URL("./.html-cache/", import.meta.url);
+await Deno.mkdir(tempDir, { recursive: true });
 
 async function getHTML(url: string) {
+  const cacheFile = new URL(btoa(encodeURIComponent(url)), tempDir);
+  if (noCache === false) {
+    try {
+      const text = await Deno.readTextFile(cacheFile);
+      console.log("Cached " + url);
+      return text;
+    } catch {
+      console.log("No Cache! " + url);
+    }
+  }
   const res = await fetch(url);
   if (res.status !== 200) throw Error("HTTP Response status is not 200");
   if (res.headers.get("content-type")?.indexOf("text/html") === -1) {
     throw Error(`${url} is not html`);
   }
   const html = await res.text();
+  Deno.writeTextFile(cacheFile, html);
   return html;
 }
 
