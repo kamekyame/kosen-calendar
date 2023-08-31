@@ -14,45 +14,56 @@ export function createKosenCalendar(shortKosenName: string, kosenName: string) {
   return calendar;
 }
 
+function getEventEqualKey(e: VEvent) {
+  return `${e.dtStart.getTime()}-${e.dtEnd.getTime()}-${e.summary}`;
+}
+
+function eventEquals(a: VEvent, b: VEvent) {
+  return getEventEqualKey(a) === getEventEqualKey(b);
+}
+
 export function compEvents(
   oldEvents: VEvent[],
   newEvents: VEvent[],
-  year: number,
+  updateYear: number,
 ) {
-  // 古い方のみ：古い方から削除
-  // 新しい方のみ：なにもしない
-  // どちらにもある：新しい方から削除
+  // (更新したい年度中にて)古い方のみ：古い方から削除
+  // (更新したい年度中にて)新しい方のみ：なにもしない
+  // (更新したい年度中にて)どちらにもある：新しい方から削除
   // 古い方に新しい方をマージ
 
   oldEvents = oldEvents.filter((o) => {
     if (
-      o.dtStart.getTime() < new Date(year, 4 - 1).getTime() ||
-      o.dtStart.getTime() >= new Date(year + 1, 4 - 1).getTime()
+      o.dtStart.getTime() < new Date(updateYear, 4 - 1).getTime() ||
+      o.dtStart.getTime() >= new Date(updateYear + 1, 4 - 1).getTime()
     ) {
       return true;
     }
-    const sameEvent = newEvents.some((n) => {
-      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
-      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
-      else if (n.summary !== o.summary) return false;
-      return true;
-    });
+    const sameEvent = newEvents.some((n) => eventEquals(n, o));
     if (sameEvent) return true;
     else return false;
   });
 
   newEvents = newEvents.filter((n) => {
-    const sameEvent = oldEvents.some((o) => {
-      if (n.dtEnd.getTime() !== o.dtEnd.getTime()) return false;
-      else if (n.dtStart.getTime() !== o.dtStart.getTime()) return false;
-      else if (n.summary !== o.summary) return false;
-      return true;
-    });
+    const sameEvent = oldEvents.some((o) => eventEquals(n, o));
     if (sameEvent) return false;
     else return true;
   });
 
-  return [...oldEvents, ...newEvents];
+  const events = [...oldEvents, ...newEvents];
+
+  // eventsの重複を排除
+  const eventSet = new Set<string>();
+  const uniqueEvents = events.filter((e) => {
+    const key = getEventEqualKey(e);
+    if (eventSet.has(key)) return false;
+    else {
+      eventSet.add(key);
+      return true;
+    }
+  });
+
+  return uniqueEvents;
 }
 
 export function resolver(meta: ImportMeta) {

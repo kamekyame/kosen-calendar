@@ -46,35 +46,32 @@ async function getScrapeEvents() {
         const summaries = summariesText.replaceAll("＞\n", "＞ ").split("\n");
 
         summaries.forEach((summary) => {
+          if (!summary) return;
+          summary = summary.trim().replaceAll("（", "(").replaceAll("）", ")");
           const m = summary.match(/\(～(?:(\d+)月)?(?:(\d+)日)\)/);
           let toMonth = month;
           let toDay = day;
           if (m) {
             // console.log(m);
-            const toText = m[0];
             if (m[1]) toMonth = parseInt(m[1]);
             if (m[2]) toDay = parseInt(m[2]);
-            const sum = summary.replace(toText, "");
-            summary = sum;
           }
 
           const dtEnd = new Date(0);
           dtEnd.setFullYear(
-            toMonth <= 3 ? year + 1 : year,
+            toMonth <= 3 ? baseYear + 1 : baseYear,
             toMonth - 1,
             toDay + 1,
           );
           console.log(dtStart, dtEnd, summary);
 
-          summaries.forEach((summary) => {
-            const event = new VEvent({
-              dtStart,
-              dtEnd,
-              summary: summary.trim(),
-              allDay: true,
-            });
-            events.push(event);
+          const event = new VEvent({
+            dtStart,
+            dtEnd,
+            summary,
+            allDay: true,
           });
+          events.push(event);
         });
       });
     },
