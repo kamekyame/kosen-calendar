@@ -52,7 +52,7 @@ async function getScrapeEvents() {
         const endMonth = dayMatch[1] || month;
         const endDay = (dayMatch[2] || day) + 1;
         start.setFullYear(month <= 3 ? year + 1 : year, month - 1, day);
-        end.setFullYear(endMonth <= 3 ? year + 1 : year, endMonth - 1, endDay);
+        end.setFullYear(month <= 3 ? year + 1 : year, endMonth - 1, endDay);
       }
 
       const dtStart = new Date(start.getTime());
