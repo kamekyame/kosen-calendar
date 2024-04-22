@@ -1,7 +1,7 @@
 import { getDOM } from "../dom.ts";
 import { VCalendar, VEvent } from "../calendar.ts";
 import { compEvents, createKosenCalendar, resolver } from "../util.ts";
-import { Element } from "https://deno.land/x/deno_dom@v0.1.43/src/dom/element.ts";
+import { Element } from "https://deno.land/x/deno_dom@v0.1.45/src/dom/element.ts";
 const resolve = resolver(import.meta);
 
 async function getScrapeEvents() {
