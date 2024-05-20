@@ -13,7 +13,7 @@ async function getScrapeEvents() {
   const events: VEvent[] = [];
 
   const dom = await getDOM(
-    "https://www.tsuyama-ct.ac.jp/gyoujiVer4/gyouji.html",
+    "https://www.tsuyama-ct.ac.jp/gyouji/gyouji.html",
   );
   if (!dom) throw Error("Can not get dom");
   const body = dom.body;
