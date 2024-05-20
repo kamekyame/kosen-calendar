@@ -2,5 +2,10 @@
   "tasks": {
     "update": "deno run -A --unsafely-ignore-certificate-errors=www.nagaoka-ct.ac.jp,www.tsuyama-ct.ac.jp",
     "check": "deno check"
+  },
+  "lock": false,
+  "imports": {
+    "deno_dom": "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts",
+    "deno_dom/": "https://deno.land/x/deno_dom@v0.1.45/"
   }
 }
