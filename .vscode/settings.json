@@ -8,7 +8,7 @@
   "[markdown]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "[jsonc]": {
+  "[json]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   }
 }

@@ -1,7 +1,5 @@
-import {
-  DOMParser,
-} from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
-export * from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
+import { DOMParser } from "deno_dom";
+export * from "deno_dom";
 
 const noCache = Deno.args.includes("--no-cache") ?? false;
 const tempDir = new URL("./.html-cache/", import.meta.url);
